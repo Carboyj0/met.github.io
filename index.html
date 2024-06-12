@@ -59,6 +59,9 @@
             display: inline-block;
             margin: 5px 1%;
         }
+        #passwordSection {
+            display: none;
+        }
     </style>
 </head>
 <body>
@@ -67,6 +70,12 @@
         <div>
             <label for="username">Username:</label>
             <input type="text" id="username" placeholder="Enter your username">
+            <button id="confirmUsernameButton">OK</button>
+            <div id="passwordSection">
+                <label for="password">Password:</label>
+                <input type="password" id="password" placeholder="Enter your password">
+                <button id="adminLoginButton">Login</button>
+            </div>
             <div>
                 <button id="startButton">Start</button>
                 <button id="stopButton">Stop</button>
@@ -77,7 +86,10 @@
     <script>
         let startTime;
         let timerInterval;
-        const webhookUrl = 'https://discord.com/api/webhooks/1250366718916694016/V1IXsy54XIyNAFGQAQ7TLnBU6A-f9RCmYTORaueALJFhKPJdbUef72L-6q9JRPO3t5jQ';
+        const adminUsernames = ["Control", "Admin", "Call Center"];
+        const adminPassword = "METPolice123";
+        const adminRedirectURL = "https://example.com/admin"; // Replace with your admin URL
+        const webhookURL = "https://discord.com/api/webhooks/1250366718916694016/V1IXsy54XIyNAFGQAQ7TLnBU6A-f9RCmYTORaueALJFhKPJdbUef72L-6q9JRPO3t5jQ";
 
         function updateTimer() {
             const currentTime = new Date();
@@ -88,6 +100,24 @@
             document.getElementById('timer').innerText = 
                 `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
         }
+
+        document.getElementById('confirmUsernameButton').addEventListener('click', () => {
+            const username = document.getElementById('username').value;
+            if (adminUsernames.includes(username)) {
+                document.getElementById('passwordSection').style.display = 'block';
+            } else {
+                document.getElementById('passwordSection').style.display = 'none';
+            }
+        });
+
+        document.getElementById('adminLoginButton').addEventListener('click', () => {
+            const password = document.getElementById('password').value;
+            if (password === adminPassword) {
+                window.location.href = adminRedirectURL;
+            } else {
+                alert('Incorrect password.');
+            }
+        });
 
         document.getElementById('startButton').addEventListener('click', () => {
             startTime = new Date();
@@ -103,28 +133,30 @@
                 const username = document.getElementById('username').value;
 
                 if (username) {
+                    const startTimeString = startTime.toLocaleTimeString();
+                    const endTimeString = endTime.toLocaleTimeString();
+                    const timeSpentString = `${Math.floor(timeSpent / 3600)}h ${Math.floor((timeSpent % 3600) / 60)}m ${timeSpent % 60}s`;
+
                     const message = {
-                        content: `Username: ${username}\nTime Started: ${startTime.toLocaleTimeString()}\nTime Stopped: ${endTime.toLocaleTimeString()}\nOverall Time: ${Math.floor(timeSpent / 60)} minutes and ${Math.floor(timeSpent % 60)} seconds`
+                        content: `Username: ${username}, Time Started: ${startTimeString}, Time Stopped: ${endTimeString}, Overall Time: ${timeSpentString}`
                     };
 
-                    fetch(webhookUrl, {
+                    fetch(webhookURL, {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
                         },
-                        body: JSON.stringify(message)
-                    }).then(response => {
-                        if (response.ok) {
-                            alert('Time sent to Discord webhook successfully.');
-                        } else {
-                            response.json().then(data => {
-                                console.error('Response error:', data);
-                                alert(`Failed to send time to Discord webhook. Error: ${data.message}`);
-                            });
+                        body: JSON.stringify(message),
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
                         }
-                    }).catch(error => {
-                        console.error('Fetch error:', error);
-                        alert('Failed to send time to Discord webhook. Please check the console for more details.');
+                        alert('Time data sent to Discord webhook.');
+                    })
+                    .catch(error => {
+                        console.error('Error sending data to Discord webhook:', error);
+                        alert('Failed to send time data to Discord webhook. Please check the console for more details.');
                     });
                 } else {
                     alert('Please enter a username.');
