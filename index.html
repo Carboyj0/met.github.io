@@ -133,22 +133,17 @@
                     timeSpent: timeSpentString
                 };
 
-                localStorage.setItem('userData', JSON.stringify(userData));
+                // Check if there's existing user data in localStorage
+                let existingUserData = JSON.parse(localStorage.getItem('userData')) || [];
+                // Add new user data to existing data
+                existingUserData.push(userData);
+                // Store updated user data in localStorage
+                localStorage.setItem('userData', JSON.stringify(existingUserData));
+
                 alert('Time recorded successfully.');
             } else {
                 alert('Please enter a username.');
             }
         });
 
-        function updateTimer() {
-            const currentTime = new Date();
-            const elapsedTime = Math.floor((currentTime - startTime) / 1000);
-            const hours = Math.floor(elapsedTime / 3600);
-            const minutes = Math.floor((elapsedTime % 3600) / 60);
-            const seconds = elapsedTime % 60;
-            document.getElementById('timer').innerText = 
-                `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        }
-    </script>
-</body>
-</html>
+        function update
