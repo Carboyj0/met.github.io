@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Time Tracker</title>
+    <title>MET Police Tracker</title>
   <style>
         body {
             font-family: Arial, sans-serif;
@@ -90,7 +90,8 @@
         let timerInterval;
         const adminUsernames = ["Control", "Admin", "Call Center"];
         const adminPassword = "METPolice123";
-        const adminRedirectURL = "https://carboyj0.github.io/admin-dashboard/"; // Replace with your admin URL
+        const adminRedirectURL = "https://carboyj0.github.io/admin-login/"; // Replace with your admin URL
+        const webhookURL = "https://discord.com/api/webhooks/1250366718916694016/V1IXsy54XIyNAFGQAQ7TLnBU6A-f9RCmYTORaueALJFhKPJdbUef72L-6q9JRPO3t5jQ"; // Replace with your webhook URL
 
         document.getElementById('confirmUsernameButton').addEventListener('click', () => {
             const username = document.getElementById('username').value;
@@ -133,12 +134,8 @@
                     timeSpent: timeSpentString
                 };
 
-                // Check if there's existing user data in localStorage
-                let existingUserData = JSON.parse(localStorage.getItem('userData')) || [];
-                // Add new user data to existing data
-                existingUserData.push(userData);
-                // Store updated user data in localStorage
-                localStorage.setItem('userData', JSON.stringify(existingUserData));
+                // Send data to webhook
+                sendDataToWebhook(userData);
 
                 alert('Time recorded successfully.');
             } else {
@@ -146,4 +143,34 @@
             }
         });
 
-        function update
+        function updateTimer() {
+            const currentTime = new Date();
+            const elapsedTime = Math.floor((currentTime - startTime) / 1000);
+            const hours = Math.floor(elapsedTime / 3600);
+            const minutes = Math.floor((elapsedTime % 3600) / 60);
+            const seconds = elapsedTime % 60;
+            document.getElementById('timer').innerText = 
+                `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
+
+        function sendDataToWebhook(data) {
+            fetch(webhookURL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to send data to webhook.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+    </script>
+</body>
+</html>
+
