@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time Tracker</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        h1, h2, h3 {
+            color: #333;
+        }
+        label {
+            margin-right: 10px;
+        }
+        input, button, textarea {
+            margin: 5px 0;
+        }
+        #adminPanel {
+            margin-top: 20px;
+            border-top: 1px solid #ccc;
+            padding-top: 20px;
+        }
+        #adminButtons button {
+            display: block;
+            margin: 5px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>Time Tracker</h1>
+    <div>
+        <label for="username">Username:</label>
+        <input type="text" id="username">
+        <button id="startButton">Start</button>
+        <button id="stopButton">Stop</button>
+    </div>
+    <div id="adminPanel">
+        <h2>Admin Panel</h2>
+        <div id="usersOnline">
+            <h3>Users Online</h3>
+        </div>
+        <div id="notesSection">
+            <h3>Notes</h3>
+            <textarea id="adminNotes" rows="4" cols="50"></textarea>
+        </div>
+        <div id="adminButtons">
+            <h3>Actions</h3>
+            ${Array.from({length: 12}, (_, i) => `<button>Button ${i + 1}</button>`).join('')}
+        </div>
+    </div>
+    <script>
+        // JavaScript Code
+        let startTime;
+        const webhookUrl = 'https://discord.com/api/webhooks/1250366718916694016/V1IXsy54XIyNAFGQAQ7TLnBU6A-f9RCmYTORaueALJFhKPJdbUef72L-6q9JRPO3t5jQ';
+
+        document.getElementById('startButton').addEventListener('click', () => {
+            startTime = new Date();
+            alert('Timer started');
+        });
+
+        document.getElementById('stopButton').addEventListener('click', () => {
+            if (startTime) {
+                const endTime = new Date();
+                const timeSpent = (endTime - startTime) / 1000; // time in seconds
+                const username = document.getElementById('username').value;
+
+                if (username) {
+                    fetch(webhookUrl, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            username: username,
+                            timeSpent: timeSpent
+                        })
+                    }).then(response => {
+                        if (response.ok) {
+                            alert('Time sent to Discord webhook successfully.');
+                        } else {
+                            alert('Failed to send time to Discord webhook.');
+                        }
+                    }).catch(error => {
+                        console.error('Error:', error);
+                    });
+                } else {
+                    alert('Please enter a username.');
+                }
+            } else {
+                alert('Please start the timer first.');
+            }
+        });
+
+        // Mock data for users online (replace with real data fetching in production)
+        const onlineUsers = ['User1', 'User2', 'User3'];
+        const usersOnlineElement = document.getElementById('usersOnline');
+        usersOnlineElement.innerHTML += onlineUsers.map(user => `<p>${user}</p>`).join('');
+
+        // Handling admin buttons
+        const adminButtons = document.getElementById('adminButtons');
+        adminButtons.querySelectorAll('button').forEach((button, index) => {
+            button.addEventListener('click', () => {
+                alert(`Button ${index + 1} clicked`);
+            });
+        });
+    </script>
+</body>
+</html>
