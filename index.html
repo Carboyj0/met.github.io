@@ -75,7 +75,6 @@
         <div id="timer">00:00:00</div>
     </div>
     <script>
-        // JavaScript Code
         let startTime;
         let timerInterval;
         const webhookUrl = 'https://discord.com/api/webhooks/1250366718916694016/V1IXsy54XIyNAFGQAQ7TLnBU6A-f9RCmYTORaueALJFhKPJdbUef72L-6q9JRPO3t5jQ';
@@ -105,10 +104,7 @@
 
                 if (username) {
                     const message = {
-                        username: username,
-                        timeStarted: startTime.toLocaleTimeString(),
-                        timeStopped: endTime.toLocaleTimeString(),
-                        overallTime: `${Math.floor(timeSpent / 60)} minutes and ${Math.floor(timeSpent % 60)} seconds`
+                        content: `Username: ${username}\nTime Started: ${startTime.toLocaleTimeString()}\nTime Stopped: ${endTime.toLocaleTimeString()}\nOverall Time: ${Math.floor(timeSpent / 60)} minutes and ${Math.floor(timeSpent % 60)} seconds`
                     };
 
                     fetch(webhookUrl, {
@@ -121,10 +117,13 @@
                         if (response.ok) {
                             alert('Time sent to Discord webhook successfully.');
                         } else {
-                            alert('Failed to send time to Discord webhook.');
+                            response.json().then(data => {
+                                console.error('Response error:', data);
+                                alert(`Failed to send time to Discord webhook. Error: ${data.message}`);
+                            });
                         }
                     }).catch(error => {
-                        console.error('Error:', error);
+                        console.error('Fetch error:', error);
                         alert('Failed to send time to Discord webhook. Please check the console for more details.');
                     });
                 } else {
