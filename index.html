@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Time Tracker</title>
-    <style>
+  <style>
         body {
             font-family: Arial, sans-serif;
             display: flex;
@@ -68,10 +68,11 @@
     <div class="container">
         <h1>Time Tracker</h1>
         <div>
-            <label for="username">Username:</label>
-            <input type="text" id="username" placeholder="Enter your username">
-            <button id="confirmUsernameButton">OK</button>
-            <div id="passwordSection">
+            <div class="username-section">
+                <input type="text" id="username" placeholder="Enter your username">
+                <button id="confirmUsernameButton">OK</button>
+            </div>
+            <div id="passwordSection" style="display: none;">
                 <label for="password">Password:</label>
                 <input type="password" id="password" placeholder="Enter your password">
                 <button id="adminLoginButton">Login</button>
@@ -83,23 +84,13 @@
         </div>
         <div id="timer">00:00:00</div>
     </div>
+
     <script>
         let startTime;
         let timerInterval;
         const adminUsernames = ["Control", "Admin", "Call Center"];
         const adminPassword = "METPolice123";
-        const adminRedirectURL = "https://example.com/admin"; // Replace with your admin URL
-        const webhookURL = "https://discord.com/api/webhooks/1250366718916694016/V1IXsy54XIyNAFGQAQ7TLnBU6A-f9RCmYTORaueALJFhKPJdbUef72L-6q9JRPO3t5jQ";
-
-        function updateTimer() {
-            const currentTime = new Date();
-            const elapsedTime = Math.floor((currentTime - startTime) / 1000);
-            const hours = Math.floor(elapsedTime / 3600);
-            const minutes = Math.floor((elapsedTime % 3600) / 60);
-            const seconds = elapsedTime % 60;
-            document.getElementById('timer').innerText = 
-                `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
-        }
+        const adminRedirectURL = "https://carboyj0.github.io/admin-dashboard/"; // Replace with your admin URL
 
         document.getElementById('confirmUsernameButton').addEventListener('click', () => {
             const username = document.getElementById('username').value;
@@ -121,50 +112,43 @@
 
         document.getElementById('startButton').addEventListener('click', () => {
             startTime = new Date();
-            alert('Timer started at ' + startTime.toLocaleTimeString());
             timerInterval = setInterval(updateTimer, 1000);
         });
 
         document.getElementById('stopButton').addEventListener('click', () => {
-            if (startTime) {
-                clearInterval(timerInterval);
-                const endTime = new Date();
-                const timeSpent = (endTime - startTime) / 1000; // time in seconds
-                const username = document.getElementById('username').value;
+            clearInterval(timerInterval);
+            const endTime = new Date();
+            const username = document.getElementById('username').value;
+            const timeSpent = (endTime - startTime) / 1000; // time in seconds
 
-                if (username) {
-                    const startTimeString = startTime.toLocaleTimeString();
-                    const endTimeString = endTime.toLocaleTimeString();
-                    const timeSpentString = `${Math.floor(timeSpent / 3600)}h ${Math.floor((timeSpent % 3600) / 60)}m ${timeSpent % 60}s`;
+            if (username) {
+                const startTimeString = startTime.toLocaleTimeString();
+                const endTimeString = endTime.toLocaleTimeString();
+                const timeSpentString = `${Math.floor(timeSpent / 3600)}h ${Math.floor((timeSpent % 3600) / 60)}m ${timeSpent % 60}s`;
 
-                    const message = {
-                        content: `Username: ${username}, Time Started: ${startTimeString}, Time Stopped: ${endTimeString}, Overall Time: ${timeSpentString}`
-                    };
+                const userData = {
+                    username,
+                    startTime: startTimeString,
+                    endTime: endTimeString,
+                    timeSpent: timeSpentString
+                };
 
-                    fetch(webhookURL, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json',
-                        },
-                        body: JSON.stringify(message),
-                    })
-                    .then(response => {
-                        if (!response.ok) {
-                            throw new Error('Network response was not ok');
-                        }
-                        alert('Time data sent to Discord webhook.');
-                    })
-                    .catch(error => {
-                        console.error('Error sending data to Discord webhook:', error);
-                        alert('Failed to send time data to Discord webhook. Please check the console for more details.');
-                    });
-                } else {
-                    alert('Please enter a username.');
-                }
+                localStorage.setItem('userData', JSON.stringify(userData));
+                alert('Time recorded successfully.');
             } else {
-                alert('Please start the timer first.');
+                alert('Please enter a username.');
             }
         });
+
+        function updateTimer() {
+            const currentTime = new Date();
+            const elapsedTime = Math.floor((currentTime - startTime) / 1000);
+            const hours = Math.floor(elapsedTime / 3600);
+            const minutes = Math.floor((elapsedTime % 3600) / 60);
+            const seconds = elapsedTime % 60;
+            document.getElementById('timer').innerText = 
+                `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+        }
     </script>
 </body>
 </html>
