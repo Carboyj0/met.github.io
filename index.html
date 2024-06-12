@@ -22,6 +22,7 @@
             margin-top: 20px;
             border-top: 1px solid #ccc;
             padding-top: 20px;
+            display: none; /* Hide by default */
         }
         #adminButtons button {
             display: block;
@@ -48,7 +49,18 @@
         </div>
         <div id="adminButtons">
             <h3>Actions</h3>
-            ${Array.from({length: 12}, (_, i) => `<button>Button ${i + 1}</button>`).join('')}
+            <button>Button 1</button>
+            <button>Button 2</button>
+            <button>Button 3</button>
+            <button>Button 4</button>
+            <button>Button 5</button>
+            <button>Button 6</button>
+            <button>Button 7</button>
+            <button>Button 8</button>
+            <button>Button 9</button>
+            <button>Button 10</button>
+            <button>Button 11</button>
+            <button>Button 12</button>
         </div>
     </div>
     <script>
@@ -92,10 +104,16 @@
             } else {
                 alert('Please start the timer first.');
             }
+
+            // Show admin panel if the user is an admin
+            const adminUsernames = ['Call Center', 'Admin', 'Control'];
+            if (adminUsernames.includes(document.getElementById('username').value)) {
+                document.getElementById('adminPanel').style.display = 'block';
+            }
         });
 
         // Mock data for users online (replace with real data fetching in production)
-        const onlineUsers = ['Call Center', 'Admin', 'Control'];
+        const onlineUsers = ['User1', 'User2', 'User3'];
         const usersOnlineElement = document.getElementById('usersOnline');
         usersOnlineElement.innerHTML += onlineUsers.map(user => `<p>${user}</p>`).join('');
 
